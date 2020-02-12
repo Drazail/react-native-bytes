@@ -1,0 +1,50 @@
+{
+  "name": "react-native-bytes",
+  "title": "React Native Bytes",
+  "version": "0.0.1",
+  "description": "A utility library that enables you to work directly with Bytes from the javascript thread",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Drazail/react-native-bytes.git",
+    "baseUrl": "https://github.com/Drazail/react-native-bytes"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-bytes",
+    "bytes",
+    "byte"
+  ],
+  "author": {
+    "name": "Drazail",
+    "email": "reza.y.3@email.com"
+  },
+  "deprecated": false,
+  "license": "Apache-2.0",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-native": "^0.61.5"
+  },
+  "devDependencies": {
+    "react": "^16.8.3",
+    "react-native": "^0.61.5",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.5",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "jest": "^24.9.0"
+  },
+  "jest": {
+    "testRegex": "(/__tests__/.*\\.test\\.js)$",
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"]
+  }
+}
+
