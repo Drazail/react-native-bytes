@@ -22,14 +22,14 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void splitFile(String sourcePath, String targetPath, int FirstByteIndex, int finalByteIndex, Promise callback) {
+    public void readFromAndWriteTo(String sourcePath, String targetPath, boolean shouldOverWrite, boolean shoudlAppend, int FirstByteIndex, int finalByteIndex, Promise callback) {
         try {
             ToRunnable runnable = new ToRunnable(() -> {
                 try {
                     FileReader reader = new FileReader(sourcePath);
                     byte[] buffer = reader.toByteArray(FirstByteIndex, finalByteIndex);
-                    FileWriter writer = new FileWriter(targetPath);
-                    String path = writer.writeToFile(buffer);
+                    FileWriter writer = new FileWriter(targetPath, shouldOverWrite);
+                    String path = writer.writeToFile(buffer, shoudlAppend);
                     callback.resolve(path);
                 } catch (Exception e) {
                     callback.reject(e);
@@ -40,6 +40,24 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
             callback.reject(e);
         }
 
+    }
+
+
+    @ReactMethod
+    public void rm(String sourcePath, Promise callback){
+        try {
+            ToRunnable runnable = new ToRunnable(() -> {
+                try {
+                    FileReader reader = new FileReader(sourcePath);
+                    reader.rm();
+                } catch (Exception e) {
+                    callback.reject(e);
+                }
+            });
+            runnable.run();
+        } catch (Exception e) {
+            callback.reject(e);
+        }
     }
 
     @ReactMethod

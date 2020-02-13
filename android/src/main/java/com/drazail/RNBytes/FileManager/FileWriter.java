@@ -1,26 +1,34 @@
 package com.drazail.RNBytes.FileManager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class FileWriter {
     File file;
-
-    public FileWriter(String path) throws IOException {
+    Boolean overWrite;
+    public FileWriter(String path, Boolean shoudlOverWrite) throws IOException {
         this.file = new File(path);
-        if (this.file.exists()) throw new IOException("a file exists at the given path");
-        if(this.file.isDirectory()) throw  new IOException("path points to a directory");
+        this.overWrite = shoudlOverWrite;
+        if(!shoudlOverWrite) {
+            if (this.file.exists()) throw new IOException("a file exists at the given path");
+        }
+        if (this.file.isDirectory()) throw new IOException("path points to a directory");
 
     }
 
-    public String writeToFile( byte[] buffer) throws IOException {
+    public String writeToFile(byte[] buffer, boolean shouldAppend) throws IOException {
         String absolutePath = this.file.getAbsolutePath();
-        FileOutputStream fos = new FileOutputStream(absolutePath);
+        FileOutputStream fos;
+        if(shouldAppend){
+            fos = new FileOutputStream(this.file, true);
+        }else {
+            fos = new FileOutputStream(absolutePath);
+        }
         fos.write(buffer);
         fos.close();
         return absolutePath;
     }
-
-
 }
