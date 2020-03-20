@@ -7,12 +7,30 @@ import java.io.RandomAccessFile;
 
 public class FileReader {
 
+    public RandomAccessFile RAF;
     private File file;
 
     public FileReader(String path) throws IOException {
+        this.RAF = RAF;
         this.file = new File(path);
         if (!this.file.exists()) throw new FileNotFoundException();
-        if(this.file.isDirectory()) throw  new IOException("path points to a directory");
+        if (this.file.isDirectory()) throw new IOException("path points to a directory");
+    }
+
+    public RandomAccessFile getRAF() {
+        return this.RAF;
+    }
+
+    public void close() throws IOException {
+        this.RAF.close();
+    }
+
+    public void read(byte[] buffer, int off, int len) throws IOException {
+        this.RAF.read(buffer,off, len);
+    }
+
+    public void readFully(byte[] buffer, int off, int len) throws IOException {
+        this.RAF.readFully(buffer, off, len);
     }
 
     public long getFileSize() {
@@ -28,9 +46,8 @@ public class FileReader {
     }
 
     /**
-     *
      * @param startingIndex start reading from this byte (including the byte itself)
-     * @param finalIndex last byte to be read (including the byte itself)
+     * @param finalIndex    last byte to be read (including the byte itself)
      * @return byte[] of all bytes read
      * @throws IOException IOException
      */
@@ -49,6 +66,7 @@ public class FileReader {
 
     public RandomAccessFile toRandomAccessFile(String mode) throws FileNotFoundException {
         RandomAccessFile RAF = new RandomAccessFile(this.file, mode);
+        this.RAF = RAF;
         return RAF;
     }
 }
