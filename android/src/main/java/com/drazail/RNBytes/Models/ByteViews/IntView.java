@@ -26,10 +26,10 @@ public class IntView extends rawView {
     public int[] getBufferAsIntArray() {
         if (this.buffer.length % 4 != 0) throw new ArrayIndexOutOfBoundsException("buffer length is not compatible with JAVA int Type");
         int[] intArray = new int[this.buffer.length/4];
-        Byte[] buffer = this.buffer;
+        byte[] buffer = this.buffer;
         for (int i = 0; i < buffer.length; i = i + 4) {
             byte[] bytes = new byte[]{buffer[i], buffer[i + 1], buffer[i + 2], buffer[i + 3]};
-            intArray[i / 4] = ((bytes[0] & 0xFF) << 24) |
+            intArray[i / 4] = ((bytes[0] & 0x000000ff) << 24) |
                     ((bytes[1] & 0xFF) << 16) |
                     ((bytes[2] & 0xFF) << 8) |
                     ((bytes[3] & 0xFF));
@@ -42,12 +42,16 @@ public class IntView extends rawView {
      * @param intArray
      */
     public void setBufferFromIntArray(int[] intArray) {
-        Byte[] byts = new Byte[intArray.length * 4];
+        byte[] bytes = new byte[intArray.length * 4];
         for (int i = 0; i < intArray.length; i++){
-            BigInteger bigInt = BigInteger.valueOf(intArray[i]);
-            System.arraycopy(bigInt.toByteArray(), 0, byts, i * 4, 4);
+            byte[] b = new byte[] {
+                    (byte)(intArray[i] >>> 24),
+                    (byte)(intArray[i] >>> 16),
+                    (byte)(intArray[i] >>> 8),
+                    (byte)intArray[i]};
+            System.arraycopy(b, 0, bytes, i * 4, 4);
         }
 
-        this.buffer = byts;
+        this.buffer = bytes;
     }
 }

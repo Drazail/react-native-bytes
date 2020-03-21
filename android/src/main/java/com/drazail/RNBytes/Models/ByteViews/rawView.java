@@ -6,12 +6,16 @@ import java.util.UUID;
 
 public class rawView {
 
-    public Byte[] buffer;
+    public byte[] buffer;
     private String id;
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     private int length;
     private int offset;
     private String encoding;
-    private ByteBuffer byteBuffer;
 
     public rawView(String encoding, ByteBuffer buffer) {
         this.id = UUID.randomUUID().toString();
@@ -19,7 +23,6 @@ public class rawView {
         this.encoding = encoding;
         this.length = buffer.getLength();
         this.offset = 0;
-        this.byteBuffer = buffer;
     }
 
     public rawView(String encoding, ByteBuffer buffer, int length) {
@@ -28,7 +31,6 @@ public class rawView {
         this.encoding = encoding;
         this.length = length;
         this.offset = 0;
-        this.byteBuffer = buffer;
     }
 
     public rawView(String encoding, ByteBuffer buffer, int srcOffset, int length) {
@@ -37,7 +39,7 @@ public class rawView {
         this.encoding = encoding;
         this.length = length;
         this.offset = srcOffset;
-        this.byteBuffer = buffer;
+
     }
 
     /**
@@ -71,22 +73,27 @@ public class rawView {
     /**
      * @return buffer field of the object
      */
-    public Byte[] getBuffer() {
+    public byte[] getBuffer() {
         return this.buffer;
     }
 
     /**
      * @param buffer Byte[] to be set as the buffer field of the object
      */
-    public void setBuffer(Byte[] buffer) {
+    public void setBuffer(byte[] buffer) {
         this.buffer = buffer;
     }
 
     /**
-     * updates the underlying ByteBuffer associated with this object
+     *
+     * @param byteBuffer ByteBuffer to be manipulated
+     * @param srcOffset first index to be copied from this,buffer to byteBuffer
+     * @param desOffset starting copying index of byteBuffer
+     * @param length number of bytes to be copied over to byteBuffer
      */
-    public void updateByteBuffer() {
-        this.byteBuffer.put(offset, buffer);
+    public void setOriginalBuffer(ByteBuffer byteBuffer, int srcOffset, int desOffset, int length){
+        byteBuffer.setBuffer(this.buffer,srcOffset,desOffset,length);
     }
+
 
 }

@@ -40,12 +40,7 @@ public class StringView extends rawView {
     /**
      * @param str
      */
-    public void setBufferFromString(String str, ByteBuffer buffer) {
-        byte[] byts = str.getBytes(Charset.forName(this.getEncoding()));
-        Byte[] bytes = new Byte[byts.length];
-        int i = 0;
-        for (byte b : byts) bytes[i++] = b;
-        buffer.setBuffer(bytes);
-        this.buffer = bytes;
+    public void setBufferFromString(String str) {
+        this.buffer = str.getBytes(Charset.forName(this.getEncoding()));
     }
 }
