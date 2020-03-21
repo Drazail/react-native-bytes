@@ -39,46 +39,8 @@ public class ByteBuffer {
         return newBuffer;
     }
 
-    /**
-     * @param length
-     * @return returns a new ByteBuffer containing a containing a the first length bytes of the original one
-     */
-
-    public ByteBuffer transfer(int length) {
-        byte[] chuck = new byte[length];
-        arraycopy(this.buffer, 0, chuck, 0, length);
-        ByteBuffer newBuffer = new ByteBuffer(length);
-        newBuffer.put(chuck);
-        return newBuffer;
-    }
-
-    /**
-     * @param srcOffset index of the first element to be copied
-     * @param length    length of the new ByteBuffer
-     * @return returns a new ByteBuffer containing a copy of src buffer starting from srcOffset up to the length
-     */
-
-    public ByteBuffer transfer(int srcOffset, int length) {
-        byte[] chuck = new byte[length];
-        arraycopy(this.buffer, srcOffset, chuck, 0, length);
-        ByteBuffer newBuffer = new ByteBuffer(length);
-        newBuffer.put(chuck);
-        return newBuffer;
-    }
-
-    /**
-     * @param srcOffset index of the first element to be copied
-     * @param desOffset index of the first element in the new ByteBuffer to be written onto
-     * @param length    length of the new ByteBuffer
-     * @return returns a new ByteBuffer containing a copy of src buffer starting from srcOffset up to the length.
-     */
-    public ByteBuffer transfer(int srcOffset, int desOffset, int length) {
-        byte[] chuck = new byte[length];
-        arraycopy(this.buffer, srcOffset, chuck, desOffset, length);
-        ByteBuffer newBuffer;
-        newBuffer = new ByteBuffer(length);
-        newBuffer.put(chuck);
-        return newBuffer;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**

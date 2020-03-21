@@ -9,10 +9,6 @@ public class rawView {
     public byte[] buffer;
     private String id;
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     private int length;
     private int offset;
     private String encoding;
@@ -41,7 +37,9 @@ public class rawView {
         this.offset = srcOffset;
 
     }
-
+    public void setId(String id) {
+        this.id = id;
+    }
     /**
      * @return UUID associated with this View
      */

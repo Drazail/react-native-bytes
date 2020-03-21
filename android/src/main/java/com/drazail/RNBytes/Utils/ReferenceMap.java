@@ -1,6 +1,7 @@
 package com.drazail.RNBytes.Utils;
 
 import com.drazail.RNBytes.FileManager.FileReader;
+import com.drazail.RNBytes.Models.ByteBuffer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,8 +9,8 @@ import java.util.Map;
 import java.util.RandomAccess;
 
 public class ReferenceMap {
-    public static Map<String, FileReader> readerMap = new HashMap<String, FileReader>();
-    public static Map<String, byte[]> byteArrayMap = new HashMap<String, byte[]>();
+    public static Map<String, FileReader> readerMap = new HashMap<>();
+    public static Map<String, ByteBuffer> byteArrayMap = new HashMap<>();
 
     public static void addReader(String name, FileReader reader){
         readerMap.put(name, reader);
@@ -21,7 +22,7 @@ public class ReferenceMap {
         readerMap.remove(name);
     }
 
-    public static void addByteArray(String name, byte[] byteArray){
+    public static void addByteArray(String name, ByteBuffer byteArray){
         byteArrayMap.put(name, byteArray);
     }
 

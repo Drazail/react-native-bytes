@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.UUID;
 
 public class FileReader {
 
     public RandomAccessFile RAF;
     private File file;
+    public String id;
 
     public FileReader(String path) throws IOException {
+        this.id = UUID.randomUUID().toString();
         this.RAF = RAF;
         this.file = new File(path);
         if (!this.file.exists()) throw new FileNotFoundException();

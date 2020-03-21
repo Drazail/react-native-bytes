@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import com.drazail.RNBytes.FileManager.FileReader;
 import com.drazail.RNBytes.FileManager.FileWriter;
+import com.drazail.RNBytes.Models.ByteBuffer;
 import com.drazail.RNBytes.Utils.ReferenceMap;
 import com.drazail.RNBytes.Utils.ToRunnable;
 import com.facebook.react.bridge.Promise;
@@ -12,6 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class RnBytesModule extends ReactContextBaseJavaModule {
 
@@ -27,12 +29,12 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void createReader(String name, String sourcePath, Promise callback ){
+    public void createReader(String sourcePath, Promise callback ){
 
         try {
             FileReader reader = new FileReader(sourcePath);
-            ReferenceMap.addReader(name, reader);
-            callback.resolve(name);
+            ReferenceMap.addReader(reader.id, reader);
+            callback.resolve(reader.id);
         } catch (IOException e) {
             e.printStackTrace();
             callback.reject(e);
@@ -41,9 +43,9 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void closeReader (String name, String sourcePath, Promise callback ){
+    public void closeReader (String reader, String sourcePath, Promise callback ){
         try {
-            ReferenceMap.removeReader(name);
+            ReferenceMap.removeReader(reader);
             callback.resolve(null);
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,18 +54,18 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createBuffer(String name, int size, Promise callback ){
+    public void createBuffer(int size, Promise callback ){
 
-            byte[] buffer = new byte[size];
-            ReferenceMap.addByteArray(name, buffer);
-            callback.resolve(name);
+            ByteBuffer buffer = new ByteBuffer(size);
+            ReferenceMap.addByteArray(buffer.getId(), buffer);
+            callback.resolve(buffer.getId());
     }
 
     @ReactMethod
-    public void removeBuffer (String name, Promise callback ){
+    public void removeBuffer (String byteBuffer, Promise callback ){
 
         try {
-            ReferenceMap.removeByteArray(name);
+            ReferenceMap.removeByteArray(byteBuffer);
             callback.resolve(null);
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,13 +74,13 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getBufferAsBase64 (String name, int off, int len, Promise callback ){
+    public void getBufferAsBase64 (String byteBuffer, int off, int len, Promise callback ){
         try {
             if(off == -1 || len == -1){
-                String string = Base64.encodeToString(ReferenceMap.byteArrayMap.get(name), Base64.DEFAULT);
+                String string = Base64.encodeToString(ReferenceMap.byteArrayMap.get(byteBuffer).getBuffer(), Base64.DEFAULT);
                 callback.resolve(string);
             }else{
-                String string = Base64.encodeToString(ReferenceMap.byteArrayMap.get(name),off, len, Base64.DEFAULT);
+                String string = Base64.encodeToString(ReferenceMap.byteArrayMap.get(byteBuffer).getBuffer(),off, len, Base64.DEFAULT);
                 callback.resolve(string);
             }
         }catch (Exception e){
@@ -89,12 +91,14 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void read(String readerName, String bufferName, int off, int len, Promise callback){
-        FileReader reader = ReferenceMap.readerMap.get(readerName);
-        byte[] buffer = ReferenceMap.byteArrayMap.get(bufferName);
+    public void read(String reader, String byteBuffer, int off, int len, Promise callback){
         try {
-            reader.read(buffer,off, len );
-            callback.resolve(bufferName);
+            FileReader mReader = ReferenceMap.readerMap.get(reader);
+            byte[] buffer = new byte[len];
+            assert mReader != null;
+            mReader.read(buffer,off, len );
+            Objects.requireNonNull(ReferenceMap.byteArrayMap.get(byteBuffer)).setBuffer(buffer,0,0,len);
+            callback.resolve(byteBuffer);
         } catch (IOException e) {
             e.printStackTrace();
             callback.reject(e);
@@ -102,12 +106,14 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void readFully(String readerName, String bufferName, int off, int len, Promise callback){
-        FileReader reader = ReferenceMap.readerMap.get(readerName);
-        byte[] buffer = ReferenceMap.byteArrayMap.get(bufferName);
+    public void readFully(String reader, String byteBuffer, int off, int len, Promise callback){
         try {
-            reader.readFully(buffer,off, len );
-            callback.resolve(bufferName);
+            FileReader mReader = ReferenceMap.readerMap.get(reader);
+            byte[] buffer = new byte[len];
+            assert mReader != null;
+            mReader.readFully(buffer,off, len );
+            Objects.requireNonNull(ReferenceMap.byteArrayMap.get(byteBuffer)).setBuffer(buffer,0,0,len);
+            callback.resolve(byteBuffer);
         } catch (IOException e) {
             e.printStackTrace();
             callback.reject(e);

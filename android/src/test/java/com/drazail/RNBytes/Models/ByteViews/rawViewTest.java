@@ -25,14 +25,22 @@ class rawViewTest {
     }
 
     @Test
-    void getSetId() {
+    void getId() {
         this.view1.setId("testId");
         assertEquals(this.view1.getId(), "testId");
     }
 
     @Test
+    void setId() {
+        this.view1.setId("testId2");
+        assertEquals(this.view1.getId(), "testId2");
+    }
+
+    @Test
     void getLength() {
         assertEquals(this.view1.getLength(), 8);
+        assertEquals(this.view2.getLength(), 8);
+        assertEquals(this.view3.getLength(), 8);
     }
 
     @Test
