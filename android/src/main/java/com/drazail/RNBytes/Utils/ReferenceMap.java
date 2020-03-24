@@ -16,9 +16,7 @@ public class ReferenceMap {
         readerMap.put(name, reader);
     }
 
-    public static void removeReader(String name) throws IOException {
-        FileReader reader = readerMap.get(name);
-        reader.close();
+    public static void removeReader(String name) {
         readerMap.remove(name);
     }
 
@@ -26,8 +24,16 @@ public class ReferenceMap {
         byteArrayMap.put(name, byteArray);
     }
 
-    public static void removeByteArray(String name) throws IOException {
+    public static void removeByteArray(String name) {
         byteArrayMap.remove(name);
+    }
+
+    public static FileReader getReader(String id){
+        return readerMap.get(id);
+    }
+
+    public static ByteBuffer getByteArray(String id){
+        return byteArrayMap.get(id);
     }
 
 }

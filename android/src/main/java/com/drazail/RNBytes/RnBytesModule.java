@@ -47,7 +47,7 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         try {
             ReferenceMap.removeReader(reader);
             callback.resolve(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             callback.reject(e);
         }
@@ -67,7 +67,7 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         try {
             ReferenceMap.removeByteArray(byteBuffer);
             callback.resolve(null);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             callback.reject(e);
         }

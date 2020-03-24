@@ -1,5 +1,7 @@
 package com.drazail.RNBytes.FileManager;
 
+import com.drazail.RNBytes.Utils.ReferenceMap;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,18 +16,15 @@ public class FileReader {
 
     public FileReader(String path) throws IOException {
         this.id = UUID.randomUUID().toString();
-        this.RAF = RAF;
         this.file = new File(path);
+        this.RAF = new RandomAccessFile(this.file, "r");
         if (!this.file.exists()) throw new FileNotFoundException();
         if (this.file.isDirectory()) throw new IOException("path points to a directory");
     }
 
-    public RandomAccessFile getRAF() {
-        return this.RAF;
-    }
-
     public void close() throws IOException {
         this.RAF.close();
+        ReferenceMap.removeReader(this.id);
     }
 
     public void read(byte[] buffer, int off, int len) throws IOException {
@@ -58,18 +57,10 @@ public class FileReader {
 
         byte[] buffer = new byte[finalIndex - startingIndex + 1];
 
-        RandomAccessFile RAF = new RandomAccessFile(this.file, "r");
-        RAF.seek(startingIndex);
-        RAF.read(buffer);
-        RAF.close();
+        this.RAF.seek(startingIndex);
+        this.RAF.read(buffer);
 
         return buffer;
 
-    }
-
-    public RandomAccessFile toRandomAccessFile(String mode) throws FileNotFoundException {
-        RandomAccessFile RAF = new RandomAccessFile(this.file, mode);
-        this.RAF = RAF;
-        return RAF;
     }
 }

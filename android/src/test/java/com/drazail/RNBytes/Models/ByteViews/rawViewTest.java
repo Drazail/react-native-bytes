@@ -5,9 +5,9 @@ import com.drazail.RNBytes.Models.ByteBuffer;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class rawViewTest {
 
@@ -63,7 +63,7 @@ class rawViewTest {
         String str = "hello wo";
         byte[] bytes = str.getBytes(Charset.forName("UTF-8"));
         view1.setBuffer(bytes);
-        assertArrayEquals(view1.getBuffer(),bytes);
+        assertArrayEquals(view1.getBuffer(), bytes);
     }
 
     @Test
