@@ -93,5 +93,4 @@ public class rawView {
         byteBuffer.setBuffer(this.buffer,srcOffset,desOffset,length);
     }
 
-
 }

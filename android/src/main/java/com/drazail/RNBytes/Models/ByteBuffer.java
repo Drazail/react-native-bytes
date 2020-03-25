@@ -1,5 +1,7 @@
 package com.drazail.RNBytes.Models;
 
+import com.drazail.RNBytes.Utils.ReferenceMap;
+
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -21,6 +23,7 @@ public class ByteBuffer {
         this.buffer = new byte[length];
         Arrays.fill(this.buffer, (byte) 1);
         this.len = length;
+        ReferenceMap.addByteArray(this.id, this);
     }
 
     /**
@@ -39,10 +42,6 @@ public class ByteBuffer {
         return newBuffer;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     /**
      * @return buffer field of the class
      */
@@ -51,11 +50,10 @@ public class ByteBuffer {
     }
 
     /**
-     *
-     * @param      src      the source array.
-     * @param      srcPos   starting position in the source array.
-     * @param      destPos  starting position in the destination data.
-     * @param      length   the number of array elements to be copied.
+     * @param src     the source array.
+     * @param srcPos  starting position in the source array.
+     * @param destPos starting position in the destination data.
+     * @param length  the number of array elements to be copied.
      */
     public void setBuffer(byte[] src, int srcPos, int destPos, int length) {
         arraycopy(src, srcPos, this.buffer, destPos, length);
@@ -82,12 +80,15 @@ public class ByteBuffer {
         return chuck;
     }
 
-
     /**
      * @return the UUID associated with this ByteBuffer
      */
     public String getId() {
         return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**

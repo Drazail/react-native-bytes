@@ -2,8 +2,6 @@ package com.drazail.RNBytes.Models.ByteViews;
 
 import com.drazail.RNBytes.Models.ByteBuffer;
 
-import java.math.BigInteger;
-
 public class IntView extends rawView {
     public IntView(String encoding, ByteBuffer buffer) {
         super(encoding, buffer);

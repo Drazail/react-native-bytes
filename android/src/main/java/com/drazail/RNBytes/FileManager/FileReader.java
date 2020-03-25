@@ -20,6 +20,7 @@ public class FileReader {
         this.RAF = new RandomAccessFile(this.file, "r");
         if (!this.file.exists()) throw new FileNotFoundException();
         if (this.file.isDirectory()) throw new IOException("path points to a directory");
+        ReferenceMap.addReader(this.id, this);
     }
 
     public void close() throws IOException {

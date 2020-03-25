@@ -1,6 +1,7 @@
 package com.drazail.RNBytes.APIClient;
 
 
+import com.drazail.RNBytes.Utils.ReferenceMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import okhttp3.FormBody;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -35,21 +37,34 @@ public class APIClient {
         return httpClient.newCall(request.build()).execute();
     }
 
-    public Response post(String url, ReadableMap headers, ReadableMap body) throws IOException {
-        FormBody.Builder formBody = new FormBody.Builder();
+    public Response post(String url, ReadableMap headers, ReadableMap body, ReadableMap buffers) throws IOException {
         Request.Builder requestBuilder = new Request.Builder();
-
         requestBuilder.url(url);
 
+        MultipartBody.Builder RequestBodyBuilder = new MultipartBody.Builder();
+        RequestBodyBuilder.setType(MultipartBody.FORM);
         for (
                 ReadableMapKeySetIterator keyIterator = body.keySetIterator();
                 keyIterator.hasNextKey();
         ) {
             String key = keyIterator.nextKey();
-            formBody.add(key, Objects.requireNonNull(headers.getString(key)));
+            RequestBodyBuilder.addFormDataPart(key, Objects.requireNonNull(body.getString(key)));
         }
 
-        FormBody form = formBody.build();
+        for (
+                ReadableMapKeySetIterator keyIterator = buffers.keySetIterator();
+                keyIterator.hasNextKey();
+        ) {
+            String key = keyIterator.nextKey();
+            ReadableMap bufferMap = buffers.getMap(key);
+            assert bufferMap != null;
+            byte[] buffer = ReferenceMap.getByteArray(bufferMap.getString("buffer")).getBuffer(bufferMap.getInt("offset"),bufferMap.getInt("length"));
+            String fileName = bufferMap.getString("fileName");
+            String name =  bufferMap.getString("name");
+            RequestBodyBuilder.addFormDataPart(name, fileName, RequestBody.create(null, buffer));
+        }
+
+        RequestBody  form = RequestBodyBuilder.build();
 
         requestBuilder.post(form);
 
