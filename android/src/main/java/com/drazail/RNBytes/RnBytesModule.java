@@ -2,6 +2,9 @@ package com.drazail.RNBytes;
 
 import android.util.Base64;
 
+import com.drazail.RNBytes.APIClient.APIClient;
+import com.drazail.RNBytes.APIClient.Options.BufferObject;
+import com.drazail.RNBytes.APIClient.Options.PostOptions;
 import com.drazail.RNBytes.FileManager.FileReader;
 import com.drazail.RNBytes.FileManager.FileWriter;
 import com.drazail.RNBytes.Models.ByteBuffer;
@@ -18,7 +21,12 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableNativeArray;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+
+import okhttp3.MediaType;
+import okhttp3.Response;
 
 public class RnBytesModule extends ReactContextBaseJavaModule {
 
@@ -193,6 +201,57 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
 
     }
 
+    /**
+     *
+     * @param url url
+     * @param buffers ReadableArray of Maps {name: string, fileName: string, mediaType:string, buffer:string}
+     * @param headers ReadableArray of Maps {key: string, value:string}
+     * @param bodies ReadableArray of Maps {key: string, value:string}
+     * @param callback promise
+     */
+    @ReactMethod
+    public void postBuffers(
+            String url,
+            ReadableArray buffers,
+            ReadableArray headers,
+            ReadableArray bodies,
+            Promise callback) {
+
+        ToRunnable runnable = new ToRunnable(() -> {
+            try {
+                BufferObject[] bufferObjects = new BufferObject[buffers.size()];
+                for (int i = 0; i < buffers.size(); i++) {
+                    ByteBuffer mBuffer = ReferenceMap.getByteArray(Objects.requireNonNull(buffers.getMap(i)).getString("buffer"));
+                    byte[] byteArray = mBuffer.getBuffer();
+                    MediaType mType = MediaType.parse(Objects.requireNonNull(Objects.requireNonNull(buffers.getMap(i)).getString("mediaType")));
+                    BufferObject bufferOptions = new BufferObject(buffers.getMap(i).getString("name"), buffers.getMap(i).getString("fileName"), byteArray, mType);
+                    bufferObjects[i] = bufferOptions;
+                }
+
+                Map<String, String> headersMap = new HashMap<>();
+                for (int i = 0; i < headers.size(); i++) {
+                    headersMap.put(Objects.requireNonNull(headers.getMap(i).getString("key")), Objects.requireNonNull(headers.getMap(i).getString("value")));
+                }
+
+                Map<String, String> bodiesMap = new HashMap<>();
+                for (int i = 0; i < headers.size(); i++) {
+                    bodiesMap.put(Objects.requireNonNull(bodies.getMap(i).getString("key")), Objects.requireNonNull(bodies.getMap(i).getString("value")));
+                }
+                PostOptions postOptions = new PostOptions(url, headersMap, bodiesMap, bufferObjects);
+
+                APIClient client = new APIClient();
+
+                Response res = client.post(postOptions);
+
+                callback.resolve(res.toString());
+            } catch (Exception e) {
+                callback.resolve(e);
+            }
+
+        });
+
+        runnable.run();
+    }
 
     @ReactMethod
     public void readFromAndWriteTo(String sourcePath, String targetPath, boolean shouldOverWrite, boolean shouldAppend, int FirstByteIndex, int finalByteIndex, Promise callback) {

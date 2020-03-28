@@ -2,7 +2,7 @@
   "name": "react-native-bytes",
   "title": "React Native Bytes",
   "version": "0.0.1",
-  "description": "A utility library that enables you to work directly with Bytes from the javascript thread",
+  "description": "A utility library that enables you to work directly with bytes from the javascript thread",
   "main": "index.js",
   "scripts": {
     "test": "jest"
