@@ -9,6 +9,7 @@ import com.drazail.RNBytes.FileManager.FileReader;
 import com.drazail.RNBytes.FileManager.FileWriter;
 import com.drazail.RNBytes.Models.ByteBuffer;
 import com.drazail.RNBytes.Models.ByteViews.IntView;
+import com.drazail.RNBytes.Models.ByteViews.StringView;
 import com.drazail.RNBytes.Models.ByteViews.rawView;
 import com.drazail.RNBytes.Utils.ReferenceMap;
 import com.drazail.RNBytes.Utils.ToRunnable;
@@ -40,6 +41,11 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         return "RNBytes";
     }
 
+    /**
+     *
+     * @param sourcePath URI of the file to be read
+     * @param callback ReactNative Promise interface
+     */
 
     @ReactMethod
     public void createReader(String sourcePath, Promise callback) {
@@ -54,8 +60,14 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
 
     }
 
+    /**
+     *
+     * @param reader reference to the reader
+     * @param callback ReactNative Promise interface
+     */
+
     @ReactMethod
-    public void closeReader(String reader, String sourcePath, Promise callback) {
+    public void closeReader(String reader, Promise callback) {
         try {
             FileReader fileReader = ReferenceMap.getReader(reader);
             fileReader.close();
@@ -66,6 +78,11 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     *
+     * @param size buffer size in bytes
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void createBuffer(int size, Promise callback) {
 
@@ -73,6 +90,11 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         callback.resolve(buffer.getId());
     }
 
+    /**
+     *
+     * @param byteBuffer reference to the byteBuffer
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void removeBuffer(String byteBuffer, Promise callback) {
 
@@ -85,6 +107,21 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     *
+     * @param reader reference to the reader
+     * @param byteBuffer reference to the buffer
+     * @param off buffer offset
+     *       * <p> The first byte read is stored into element <code>b[0]</code>, the
+     *      * next one into <code>b[1]</code>, and so on. The number of bytes read is,
+     *      * at most, equal to the length of <code>buffer</code>. Let <i>k</i> be the
+     *      * number of bytes actually read; these bytes will be stored in elements
+     *      * <code>b[0]</code> through <code>b[</code><i>k</i><code>-1]</code>,
+     *      * leaving elements <code>b[</code><i>k</i><code>]</code> through
+     *      * <code>b[b.length-1]</code> unaffected.
+     * @param len length to be read into the buffer
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void readToBuffer(String reader, String byteBuffer, int off, int len, Promise callback) {
         try {
@@ -100,6 +137,25 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * Reads exactly {@code len} bytes from reader source into the buffer,
+     * This method reads
+     * repeatedly from the file until the requested number of bytes are
+     * read. This method blocks until the requested number of bytes are
+     * read, the end of the stream is detected, or an exception is thrown.
+     * @param reader reference to the reader
+     * @param byteBuffer reference to the buffer
+     * @param off buffer offset
+     *       * <p> The first byte read is stored into element <code>b[0]</code>, the
+     *      * next one into <code>b[1]</code>, and so on. The number of bytes read is,
+     *      * at most, equal to the length of <code>buffer</code>. Let <i>k</i> be the
+     *      * number of bytes actually read; these bytes will be stored in elements
+     *      * <code>b[0]</code> through <code>b[</code><i>k</i><code>-1]</code>,
+     *      * leaving elements <code>b[</code><i>k</i><code>]</code> through
+     *      * <code>b[b.length-1]</code> unaffected.
+     * @param len length to be read into the buffer
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void readFullyToBuffer(String reader, String byteBuffer, int off, int len, Promise callback) {
         try {
@@ -114,6 +170,14 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
             callback.reject(e);
         }
     }
+
+    /**
+     *
+     * @param byteBuffer reference to the buffer
+     * @param off buffer offset
+     * @param len length to be read
+     * @param callback ReactNative Promise interface
+     */
 
     @ReactMethod
     public void getBufferAsBase64(String byteBuffer, int off, int len, Promise callback) {
@@ -132,8 +196,33 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
 
     }
 
-    @ReactMethod
 
+    /**
+     *
+     * @param view reference to a view
+     * @param buffer reference to the buffer
+     * @param srcOffset view offset
+     * @param desOffset buffer offset
+     * @param length number of bytes to be written into the buffer
+     * @param callback ReactNative Promise interface
+     */
+    @ReactMethod
+    public void updateBuffer(String view, String buffer, int srcOffset, int desOffset, int length, Promise callback) {
+        rawView mView = ReferenceMap.getView(view);
+        ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
+        mView.setOriginalBuffer(mBuffer, srcOffset, desOffset, length);
+        callback.resolve(buffer);
+    }
+
+
+    /**
+     *
+     * @param buffer reference to a buffer
+     * @param length length of the view
+     * @param sourceOffset buffer offset
+     * @param callback ReactNative Promise interface
+     */
+    @ReactMethod
     public void createIntView(String buffer, int length, int sourceOffset, Promise callback) {
         if (length == -1) {
             ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
@@ -150,9 +239,15 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     *
+     * @param intView reference to an intView
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
 
-    public void getViewIntArray(String intView, Promise callback) {
+    public void getArrayFromIntView(String intView, Promise callback) {
         IntView mIntView = (IntView) ReferenceMap.getView(intView);
         WritableArray writableArray = new WritableNativeArray();
         int[] IntArray = mIntView.getBufferAsIntArray();
@@ -163,9 +258,16 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         callback.resolve(writableArray);
     }
 
+
+    /**
+     *
+     * @param intView reference to an intView
+     * @param readableArray int[]
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
 
-    public void setViewIntArray(String intView, ReadableArray readableArray, Promise callback) {
+    public void setIntViewAray(String intView, ReadableArray readableArray, Promise callback) {
         IntView mIntView = (IntView) ReferenceMap.getView(intView);
 
         int[] array = new int[readableArray.size()];
@@ -177,14 +279,81 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         callback.resolve(intView);
     }
 
+
+    /**
+     *
+     * @param buffer reference to a buffer
+     * @param length length of the view
+     * @param sourceOffset buffer offset
+     * @param encoding  one of Standard charsets -
+     *                 *Canonical Name for java.io API NOT the java.nio API ie:
+     *                 *use "ASCII" not "US-ASCII"
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
-    public void setOriginalBuffer(String view, String buffer, int srcOffset, int desOffset, int length, Promise callback) {
-        rawView mView = ReferenceMap.getView(view);
-        ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
-        mView.setOriginalBuffer(mBuffer, srcOffset, desOffset, length);
-        callback.resolve(buffer);
+
+    public void createStringView(String buffer, int length, int sourceOffset, String encoding, Promise callback) {
+        if (length == -1) {
+            ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
+            StringView stringView = new StringView(encoding, mBuffer);
+            callback.resolve(stringView.getId());
+        } else if (sourceOffset == 0) {
+            ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
+            StringView stringView = new StringView(encoding, mBuffer, length);
+            callback.resolve(stringView.getId());
+        } else {
+            ByteBuffer mBuffer = ReferenceMap.getByteArray(buffer);
+            StringView stringView = new StringView(encoding, mBuffer, sourceOffset, length);
+            callback.resolve(stringView.getId());
+        }
     }
 
+    /**
+     *
+     * @param stringView reference to a StringView
+     * @param callback ReactNative Promise interface
+     */
+
+    @ReactMethod
+
+    public void getStringFromStringView(String stringView, Promise callback) {
+        try{
+            StringView mStringView = (StringView) ReferenceMap.getView(stringView);
+            String string = mStringView.getBufferAsString();
+            callback.resolve(string);
+        }catch (Exception e){
+            e.printStackTrace();
+            callback.reject(e);
+        }
+
+    }
+
+
+    /**
+     *
+     * @param stringView reference to a StringView
+     * @param string string to be written into the view
+     * @param callback ReactNative Promise interface
+     */
+    @ReactMethod
+
+    public void setStringViewValue(String stringView, String string, Promise callback) {
+        StringView mStringView = (StringView) ReferenceMap.getView(stringView);
+        mStringView.setBufferFromString(string);
+        callback.resolve(mStringView.getId());
+    }
+
+
+    /**
+     *
+     * @param buffer reference to buffer
+     * @param targetPath URI of the target file
+     * @param shouldOverWrite should overWrite if the file exists
+     * @param shouldAppend should append the file if exists
+     * @param srcOffset buffer offset
+     * @param length number of bytes to be read from the buffer
+     * @param callback ReactNative Promise interface
+     */
 
     @ReactMethod
 
@@ -207,7 +376,7 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
      * @param buffers ReadableArray of Maps {name: string, fileName: string, mediaType:string, buffer:string}
      * @param headers ReadableArray of Maps {key: string, value:string}
      * @param bodies ReadableArray of Maps {key: string, value:string}
-     * @param callback promise
+     * @param callback ReactNative Promise interface
      */
     @ReactMethod
     public void postBuffers(
@@ -253,6 +422,16 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         runnable.run();
     }
 
+    /**
+     *
+     * @param sourcePath URI of the source file
+     * @param targetPath URI of the target file
+     * @param shouldOverWrite should overWrite if the file exists
+     * @param shouldAppend should append the file if exists
+     * @param FirstByteIndex the index of the first byte read from the source
+     * @param finalByteIndex final byte index to be read from the source
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void readFromAndWriteTo(String sourcePath, String targetPath, boolean shouldOverWrite, boolean shouldAppend, int FirstByteIndex, int finalByteIndex, Promise callback) {
         try {
@@ -275,6 +454,11 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
     }
 
 
+    /**
+     *
+     * @param sourcePath URI of the source file
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void rm(String sourcePath, Promise callback) {
         try {
@@ -282,6 +466,7 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
                 try {
                     FileReader reader = new FileReader(sourcePath);
                     reader.rm();
+                    callback.resolve(null);
                 } catch (Exception e) {
                     callback.reject(e);
                 }
@@ -292,6 +477,11 @@ public class RnBytesModule extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     *
+     * @param path URI of the file
+     * @param callback ReactNative Promise interface
+     */
     @ReactMethod
     public void getFileLength(String path, Promise callback) {
         try {
